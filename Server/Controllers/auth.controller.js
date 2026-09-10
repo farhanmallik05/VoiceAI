@@ -11,9 +11,10 @@ export const googleAuth = async (req,res) => {
         }
         let user = await User.findOne({email}).select("-geminiApiKey -geminiApiIv")
         if(!user){
-            user = await User.create({
+            const newUser = await User.create({
                 name , email
             })
+            user = await User.findById(newUser._id).select("-geminiApiKey -geminiApiIv")
         }
         const token = await genToken(user._id)
         res.cookie("token" , token , {

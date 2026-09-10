@@ -48,9 +48,13 @@ export const saveAssistant = async (req,res) => {
         user.isSetupComplete = true
         await user.save()
 
+        const userResponse = user.toObject()
+        delete userResponse.geminiApiKey
+        delete userResponse.geminiApiIv
+
         return res.status(200).json({ message:
           "Assistant saved successfully",
-        user})
+        user: userResponse})
     } catch (error) {
         return res.status(500).json({message:`failed to save Assistant ${error}`})
     }

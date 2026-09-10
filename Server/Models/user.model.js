@@ -1,4 +1,16 @@
 import mongoose from "mongoose";
+import crypto from "crypto";
+
+if (!process.env.ENCRYPTION_KEY) {
+    console.warn(
+        "\x1b[33m[WARNING]\x1b[0m ENCRYPTION_KEY is not set in .env. " +
+        "A temporary random key will be used, which will make ALL existing encrypted API keys unreadable on server restart. " +
+        "Please set a persistent 64-char hex ENCRYPTION_KEY in your .env file."
+    );
+}
+
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || crypto.randomBytes(32).toString('hex');
+const ALGORITHM = 'aes-256-cbc';
 
 const pageSchema = new mongoose.Schema(
     {
@@ -26,7 +38,7 @@ const userSchema = new mongoose.Schema({
     },
     assistantName:{
         type:String,
-        default:"Shifra"
+        default:"Voice"
     },
     businessName:{
         type:String,
@@ -114,10 +126,6 @@ const userSchema = new mongoose.Schema({
 
 },{timestamps:true})
 
-import crypto from "crypto";
-
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || crypto.randomBytes(32).toString('hex');
-const ALGORITHM = 'aes-256-cbc';
 
 userSchema.pre('save', function(next) {
     if (this.isModified('geminiApiKey') && this.geminiApiKey) {

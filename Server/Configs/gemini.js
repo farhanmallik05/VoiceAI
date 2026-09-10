@@ -1,4 +1,4 @@
-const Gemini_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent"
+const Gemini_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
 
 export const generateGeminiResponse = async ({
@@ -34,34 +34,24 @@ export const generateGeminiResponse = async ({
 
         if (!response.ok) {
 
-        // Invalid API Key
-        if (
-          response.status === 400 ||
-          response.status === 401
-        ) {
+            // Invalid API Key
+            if (
+              response.status === 400 ||
+              response.status === 401
+            ) {
+              user.geminiStatus = "invalid";
+              await user.save();
+            }
 
-          user.geminiStatus =
-            "invalid";
+            // Quota Exceeded
+            if (response.status === 429) {
+              user.geminiStatus = "quota_exceeded";
+              await user.save();
+            }
 
-          await user.save();
+            const err = await response.text();
+            throw new Error(err);
         }
-
-        // Quota Exceeded
-        if (
-          response.status === 429
-        ) {
-
-          user.geminiStatus =
-            "quota_exceeded";
-
-          await user.save();
-        }
-
-        const err =
-          await response.text();
-
-        throw new Error(err);
-      }
 
       // =========================
       // SUCCESS STATUS

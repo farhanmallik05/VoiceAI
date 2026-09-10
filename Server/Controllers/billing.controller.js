@@ -64,10 +64,9 @@ export const verifyBilling = async (req, res) => {
             razorpay_payment_id).digest("hex")
 
         if (sign !== razorpay_signature) {
-            return res.json({
+            return res.status(400).json({
                 success: false,
-                message:
-                    "Payment verification failed",
+                message: "Payment verification failed",
             });
         }
 

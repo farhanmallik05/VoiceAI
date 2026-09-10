@@ -356,15 +356,15 @@ function Builder({user , setUser}) {
             <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
               <input type="text" placeholder='Page Name' className='border border-gray-200 rounded-2xl px-4 py-3'
               onChange={(e)=>setPageName(e.target.value)}
-              value={[pageName]}/>
+              value={pageName}/>
 
               <input type="text" placeholder='/pricing' className='border border-gray-200 rounded-2xl px-4 py-3'
               onChange={(e)=>setPagePath(e.target.value)}
-              value={[pagePath]}/>
+              value={pagePath}/>
 
               <input type="text" placeholder='Pricing  Plan' className='border border-gray-200 rounded-2xl px-4 py-3'
               onChange={(e)=>setPageKeywords(e.target.value)}
-              value={[pageKeywords]}/>
+              value={pageKeywords}/>
             </div>
 
             <div className='mt-5 space-y-3'>
