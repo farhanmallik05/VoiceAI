@@ -27,38 +27,38 @@
 
     const popup = document.createElement("div")
 
-    popup.className = `shifra-popup theme-${theme}`
+    popup.className = `voice-popup theme-${theme}`
 
     popup.innerHTML = `
-    <div class="shifra-overlay"></div>
+    <div class="voice-overlay"></div>
 
-    <div class="shifra-content">
+    <div class="voice-content">
 
-       <div class="shifra-top">
-            <div class="shifra-orb-wrap">
+       <div class="voice-top">
+            <div class="voice-orb-wrap">
 
-                <div class="shifra-orb-glow"></div>
+                <div class="voice-orb-glow"></div>
 
-                <div class="shifra-orb"></div>
+                <div class="voice-orb"></div>
 
             </div>
 
-            <h2 class="shifra-title">
-                Hello! I'm Shifra AI
+            <h2 class="voice-title">
+                Hello! I'm Voice AI
             </h2>
 
-            <p class="shifra-sub">
+            <p class="voice-sub">
                 Your smart voice assistant.
                 <br />
                 Ask anything about your website.
             </p>
 
 
-            <div class="shifra-status">
+            <div class="voice-status">
                 Tap button to Speak
             </div>
 
-            <div class="shifra-wave">
+            <div class="voice-wave">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -68,24 +68,24 @@
             </div>
 
             <!-- User Text -->
-            <div class="shifra-user-text">
+            <div class="voice-user-text">
             </div>
 
             <!-- AI Text -->
-            <div class="shifra-ai-text">
+            <div class="voice-ai-text">
             </div>
   
         </div>
 
 
-        <div class="shifra-bottom">
+        <div class="voice-bottom">
             
-            <button class="shifra-mic">
+            <button class="voice-mic">
 
                <img 
                src="http://localhost:5173/mic.svg"
                alt="mic"
-               class="shifra-mic-icon"/>
+               class="voice-mic-icon"/>
             </button>
         </div>
     </div>
@@ -98,7 +98,7 @@
 
     const button = document.createElement("button")
 
-    button.className = `shifra-btn theme-${theme}`
+    button.className = `voice-btn theme-${theme}`
 
     button.innerHTML = `
     <img 
@@ -145,15 +145,15 @@
     const applyConfig = () => {
         if (!assistantConfig) return;
 
-        popup.className = `shifra-popup theme-${assistantConfig.theme}`
+        popup.className = `voice-popup theme-${assistantConfig.theme}`
 
-        button.className = `shifra-btn theme-${assistantConfig.theme}`
+        button.className = `voice-btn theme-${assistantConfig.theme}`
 
-        const title = popup.querySelector(".shifra-title")
+        const title = popup.querySelector(".voice-title")
 
         title.innerHTML = `Hello! I'm ${assistantConfig.assistantName}`;
 
-        const subTitle = popup.querySelector(".shifra-sub")
+        const subTitle = popup.querySelector(".voice-sub")
         subTitle.innerHTML = `
     Welcome to
     ${assistantConfig.businessName}.
@@ -172,27 +172,27 @@
 
     const status =
         popup.querySelector(
-            ".shifra-status"
+            ".voice-status"
         );
 
     const wave =
         popup.querySelector(
-            ".shifra-wave"
+            ".voice-wave"
         );
 
     const userText =
         popup.querySelector(
-            ".shifra-user-text"
+            ".voice-user-text"
         );
 
     const aiText =
         popup.querySelector(
-            ".shifra-ai-text"
+            ".voice-ai-text"
         );
 
     const mic =
         popup.querySelector(
-            ".shifra-mic"
+            ".voice-mic"
         );
 
 
