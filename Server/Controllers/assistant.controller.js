@@ -35,11 +35,11 @@ export const askAssistant = async (req, res) => {
         if (!user.geminiApiKey) {
             return res.status(400).json({ message: "gemini apikey is not added" })
         }
+        // if (user.plan === "free"
+        //     && user.totalMessages >= user.requestLimit) {
+        //     return res.status(400).json({ message: "Free limit reached" })
+        // }
 
-        if (user.plan === "free"
-            && user.totalMessages >= user.requestLimit) {
-            return res.status(400).json({ message: "Free limit reached" })
-        }
 
         if (user.plan === "pro" && user.proExpiresAt && new Date(user.proExpiresAt) < new Date()) {
             user.plan = "free"
