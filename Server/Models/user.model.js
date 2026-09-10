@@ -127,7 +127,7 @@ const userSchema = new mongoose.Schema({
 },{timestamps:true})
 
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', async function() {
     if (this.isModified('geminiApiKey') && this.geminiApiKey) {
         try {
             const iv = crypto.randomBytes(16);
@@ -140,7 +140,6 @@ userSchema.pre('save', function(next) {
             console.error("Encryption failed", e);
         }
     }
-    next();
 });
 
 userSchema.methods.getDecryptedApiKey = function() {
