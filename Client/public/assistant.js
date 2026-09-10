@@ -1,11 +1,33 @@
 (function () {
 
 
-    // userData
+    // userData & script resolution
 
-    const script = document.currentScript;
+    const script = document.currentScript || 
+                   document.querySelector('script[data-user-id]') || 
+                   document.querySelector('script[src*="assistant.js"]');
 
-    const userId = script?.dataset?.userId
+    const userId = script?.dataset?.userId || script?.getAttribute('data-user-id');
+
+    // Base URL for static assets (CSS, icons) derived from the script source
+    let assetBaseUrl = "http://localhost:5173";
+    try {
+        if (script && script.src) {
+            const parsedUrl = new URL(script.src, window.location.href);
+            assetBaseUrl = parsedUrl.origin;
+        } else {
+            assetBaseUrl = window.location.origin;
+        }
+    } catch (e) {
+        assetBaseUrl = window.location.origin;
+    }
+
+    // Base URL for the API server (prioritize data-server-url, fallback appropriately)
+    const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    const defaultServerUrl = isLocalhost ? "http://localhost:8000" : "https://voiceai-ygsy.onrender.com";
+    const serverUrl = script?.dataset?.serverUrl || 
+                      script?.getAttribute('data-server-url') || 
+                      defaultServerUrl;
 
     const theme = "dark"
 
@@ -18,7 +40,7 @@
 
     link.rel = "stylesheet"
 
-    link.href = "http://localhost:5173/assistant.css"
+    link.href = `${assetBaseUrl}/assistant.css`
 
     document.head.appendChild(link)
 
@@ -83,7 +105,7 @@
             <button class="voice-mic">
 
                <img 
-               src="http://localhost:5173/mic.svg"
+               src="${assetBaseUrl}/mic.svg"
                alt="mic"
                class="voice-mic-icon"/>
             </button>
@@ -102,7 +124,7 @@
 
     button.innerHTML = `
     <img 
-    src="http://localhost:5173/logo.png"
+    src="${assetBaseUrl}/logo.png"
     alt="logo"
     />`;
     document.body.appendChild(button)
@@ -123,19 +145,25 @@
     // load Assistant
 
     const loadAssistant = async () => {
+        if (!userId) {
+            console.warn("[VoiceAI] Missing userId in script tag.");
+            return;
+        }
         try {
-            const res = await fetch(`https://voiceai-ygsy.onrender.com/api/assistant/config/${userId}`)
+            const res = await fetch(`${serverUrl}/api/assistant/config/${userId}`)
 
             const data = await res.json()
 
-            if (data) {
+            if (data && data.user) {
                 assistantConfig = data.user
                 applyConfig()
+            } else if (data && data.message) {
+                console.warn("[VoiceAI] Config notice:", data.message)
             }
 
         } catch (error) {
-            console.log(
-                "Assistant Load Error:",
+            console.error(
+                "[VoiceAI] Assistant Load Error:",
                 error
             );
         }
@@ -284,7 +312,7 @@
                 status.innerText = "Thinking...";
                 
 
-                const res = await fetch("https://voiceai-ygsy.onrender.com/api/assistant/ask" , {
+                const res = await fetch(`${serverUrl}/api/assistant/ask` , {
                     method:"POST",
                     headers:{
                         "Content-Type":
@@ -297,7 +325,7 @@
                 })
 
                 const data = await res.json()
-                console.log(data)
+                console.log("[VoiceAI] Ask response:", data)
 
                 if(data.success){
 
@@ -314,14 +342,14 @@
                     }
 
                 }else{
-                    speak("Response Error please Check your plan")
+                    speak(data.message || "Response Error please Check your plan")
 
                 }
 
 
 
             } catch (error) {
-                console.log(error)
+                console.error("[VoiceAI] Ask Error:", error)
                 speak("AI Server Error")
                 
             }

@@ -1,4 +1,5 @@
-const Gemini_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash"
+const Gemini_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`
 
 
 export const generateGeminiResponse = async ({
@@ -79,14 +80,12 @@ export const generateGeminiResponse = async ({
       return text.trim();
     } catch (error) {
 
-         console.error(
-        "Gemini Fetch Error:",
-        error.message
-      );
+        console.error(
+            "Gemini Fetch Error:",
+            error.message
+        );
 
-      throw new Error(
-        "Gemini API fetch failed"
-      );
+        throw error;
 
     }
 }

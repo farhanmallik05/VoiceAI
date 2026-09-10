@@ -1,16 +1,20 @@
+import "dotenv/config";
 import mongoose from "mongoose";
 import crypto from "crypto";
 
-if (!process.env.ENCRYPTION_KEY) {
-    console.warn(
-        "\x1b[33m[WARNING]\x1b[0m ENCRYPTION_KEY is not set in .env. " +
-        "A temporary random key will be used, which will make ALL existing encrypted API keys unreadable on server restart. " +
-        "Please set a persistent 64-char hex ENCRYPTION_KEY in your .env file."
-    );
-}
-
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || crypto.randomBytes(32).toString('hex');
 const ALGORITHM = 'aes-256-cbc';
+
+const getEncryptionKey = () => {
+    const key = process.env.ENCRYPTION_KEY;
+    if (!key) {
+        console.warn(
+            "\x1b[33m[WARNING]\x1b[0m ENCRYPTION_KEY is not set in .env. " +
+            "Please set a persistent 64-char hex ENCRYPTION_KEY in your .env file."
+        );
+        return null;
+    }
+    return Buffer.from(key, 'hex');
+};
 
 const pageSchema = new mongoose.Schema(
     {
@@ -130,8 +134,13 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function() {
     if (this.isModified('geminiApiKey') && this.geminiApiKey) {
         try {
+            const keyBuffer = getEncryptionKey();
+            if (!keyBuffer) {
+                console.error("Cannot encrypt API key: ENCRYPTION_KEY is not configured");
+                return;
+            }
             const iv = crypto.randomBytes(16);
-            const cipher = crypto.createCipheriv(ALGORITHM, Buffer.from(ENCRYPTION_KEY, 'hex'), iv);
+            const cipher = crypto.createCipheriv(ALGORITHM, keyBuffer, iv);
             let encrypted = cipher.update(this.geminiApiKey, 'utf8', 'hex');
             encrypted += cipher.final('hex');
             this.geminiApiKey = encrypted;
@@ -145,7 +154,12 @@ userSchema.pre('save', async function() {
 userSchema.methods.getDecryptedApiKey = function() {
     if (!this.geminiApiKey || !this.geminiApiIv) return this.geminiApiKey; 
     try {
-        const decipher = crypto.createDecipheriv(ALGORITHM, Buffer.from(ENCRYPTION_KEY, 'hex'), Buffer.from(this.geminiApiIv, 'hex'));
+        const keyBuffer = getEncryptionKey();
+        if (!keyBuffer) {
+            console.error("Cannot decrypt API key: ENCRYPTION_KEY is not configured");
+            return "";
+        }
+        const decipher = crypto.createDecipheriv(ALGORITHM, keyBuffer, Buffer.from(this.geminiApiIv, 'hex'));
         let decrypted = decipher.update(this.geminiApiKey, 'hex', 'utf8');
         decrypted += decipher.final('utf8');
         return decrypted;

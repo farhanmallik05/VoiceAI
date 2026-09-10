@@ -41,7 +41,7 @@ export const askAssistant = async (req, res) => {
             return res.status(400).json({ message: "Free limit reached" })
         }
 
-        if (user.plan === "pro" && new Date(user.proExpiresAt) < new Date()) {
+        if (user.plan === "pro" && user.proExpiresAt && new Date(user.proExpiresAt) < new Date()) {
             user.plan = "free"
 
             await user.save()
@@ -173,11 +173,10 @@ ${message}
 
         console.log(error)
 
-        return  res.status(500).json({
-                success: false,
-                message:
-                    "Assistant AI Error",
-            });
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Assistant AI Error",
+        });
 
     }
 }

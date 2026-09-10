@@ -122,7 +122,7 @@ function Builder({user , setUser}) {
 
 
 
-     const embedCode = `<script src="${CLIENT_URL}/assistant.js" data-user-id="${user?._id}"></script>`;
+     const embedCode = `<script src="${CLIENT_URL}/assistant.js" data-user-id="${user?._id || ""}" data-server-url="${ServerUrl}"></script>`;
 
   return (
     <div className='min-h-screen bg-[#f7f8fc] px-4 py-8'>
@@ -203,13 +203,13 @@ function Builder({user , setUser}) {
                   </p>
 
                   <pre className='mt-3 bg-[#0b1020] text-emerald-400 rounded-xl p-3 text-xs font-mono overflow-x-auto'>
-                     {`<body>
+                     {\`<body>
 
   Your Website Content
 
-  <script src="${CLIENT_URL}/assistant.js" data-user-id="${user?._id}"></script>
+  <script src="\${CLIENT_URL}/assistant.js" data-user-id="\${user?._id || ""}" data-server-url="\${ServerUrl}"></script>
 
-</body>`}
+</body>\`}
                   </pre>
                 </div>
 
@@ -280,7 +280,7 @@ function Builder({user , setUser}) {
                 {THEMES.map((item)=>(
                   <button key={item}
                   onClick={()=>setTheme(item)}
-                   className={`py-3 rounded-2xl border-2 capitalize ${theme === item
+                   className={`py-3 rounded-2xl border-2 capitalize \${theme === item
                         ? "border-purple-500 bg-purple-50 text-purple-700"
                         : "border-gray-200"
                         }`}>{item}
@@ -297,7 +297,7 @@ function Builder({user , setUser}) {
                 {TONES.map((item)=>(
                   <button key={item}
                   onClick={()=>setTone(item)}
-                   className={`py-3 rounded-2xl border-2 capitalize ${tone === item
+                   className={`py-3 rounded-2xl border-2 capitalize \${tone === item
                         ? "border-purple-500 bg-purple-50 text-purple-700"
                         : "border-gray-200"
                         }`}>{item}
@@ -329,7 +329,7 @@ function Builder({user , setUser}) {
             </div>
 
             <input type="password" 
-            placeholder="AIza..."
+            placeholder={user?.isSetupComplete ? "•••••••• (Key saved - enter new key to update)" : "AIza..."}
             onChange={(e)=>setGeminiApiKey(e.target.value)}
             value={geminiApiKey}
             className="w-full border border-gray-200 rounded-2xl px-4 py-3" />
@@ -394,7 +394,7 @@ function Builder({user , setUser}) {
         !businessName  ||
         !businessType ||
         !businessDescription ||
-        !geminiApiKey} className='w-full h-14 rounded-2xl bg-gradient-to-r from-purple-500 to-emerald-500 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed'>
+        (!user?.isSetupComplete && !geminiApiKey)} className='w-full h-14 rounded-2xl bg-gradient-to-r from-purple-500 to-emerald-500 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed'>
             {
               loading ? "Saving..." : user.isSetupComplete ? "Update Assistant" : "Save Assistant"
             }
