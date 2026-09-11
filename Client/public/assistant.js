@@ -305,7 +305,15 @@
 
 
       recognition.onresult = (e)=>{
-        const text = e.results[0][0].transcript
+        const text = e.results[0][0].transcript.trim()
+
+        if (!text) {
+            userText.innerText = "You: (no speech detected)";
+            status.innerText = "Tap button to Speak";
+            wave.style.opacity = "0";
+            recognition.stop();
+            return;
+        }
 
         userText.innerText = "You: " + text;
 
