@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light" />
+<title>MedGrid — Live healthcare coordination for rural Maharashtra</title>
+<meta name="description" content="MedGrid matches a patient's real need to live hospital capacity across Maharashtra, ranked by capability and trust, not just distance. Built for Smart India Hackathon 2026, problem statement SIH26133." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #FAFAF6;
+    --bg-panel: #EEF3EC;
+    --ink: #142822;
+    --ink-soft: rgba(20, 40, 34, 0.64);
+    --ink-faint: rgba(20, 40, 34, 0.42);
+    --pulse: #D6453D;
+    --pulse-deep: #A8352E;
+    --trust: #1F6F63;
+    --trust-soft: #DCEAE5;
+    --line: #DAD7C8;
+    --white: #FFFFFF;
+    --font-display: 'Instrument Serif', Georgia, serif;
+    --font-body: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --section-pad: clamp(64px, 9vw, 128px);
+    --gutter: clamp(24px, 6vw, 72px);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, blockquote {
+    font-family: var(--font-display);
+    font-weight: 400;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  p { margin: 0; }
+
+  a { color: inherit; }
+
+  :focus-visible {
+    outline: 2px solid var(--trust);
+    outline-offset: 3px;
+  }
+
+  img, svg, canvas { display: block; max-width: 100%; }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+  }
+
+  /* ---------------- Nav ---------------- */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px var(--gutter);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav__mark {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+  }
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    font-size: 0.92rem;
+  }
+  .nav__links a { text-decoration: none; color: var(--ink-soft); }
+  .nav__links a:hover { color: var(--ink); }
+  .nav__tag {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (max-width: 700px) {
+    .nav__links a { display: none; }
+  }
+
+  /* ---------------- Hero ---------------- */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: min(88vh, 780px);
+  }
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--section-pad) var(--gutter);
+    gap: 28px;
+  }
+  .hero__title {
+    font-size: clamp(2.3rem, 4.6vw, 3.6rem);
+    line-height: 1.08;
+    max-width: 14ch;
+  }
+  .hero__sub {
+    max-width: 46ch;
+    font-size: 1.08rem;
+    color: var(--ink-soft);
+  }
+  .scroll-cue {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    width: fit-content;
+  }
+  .scroll-cue__arrow {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: bob 2.2s ease-in-out infinite;
+  }
+  .scroll-cue__arrow::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-right: 1.5px solid var(--ink);
+    border-bottom: 1.5px solid var(--ink);
+    transform: rotate(45deg) translateY(-2px);
+  }
+  .scroll-cue:hover .scroll-cue__arrow { border-color: var(--trust); background: var(--trust-soft); }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+  }
+
+  .hero__canvas-wrap {
+    position: relative;
+    background: var(--bg-panel);
+    min-height: 320px;
+    overflow: hidden;
+  }
+  .hero__canvas-wrap canvas { width: 100%; height: 100%; display: block; }
+  .hero__canvas-tag {
+    position: absolute;
+    left: 24px;
+    bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+  .hero__canvas-tag .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--pulse);
+    animation: dotpulse 1.6s ease-in-out infinite;
+  }
+  @keyframes dotpulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero__canvas-wrap { min-height: 320px; order: -1; }
+    .hero__content { padding-top: 56px; }
+  }
+
+  /* ---------------- Vitals strip ---------------- */
+  .vitals {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .vitals__item {
+    padding: 22px var(--gutter);
+    border-left: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .vitals__item:first-child { border-left: none; }
+  .vitals__label {
+    font-size: 0.76rem;
+    color: var(--ink-faint);
+  }
+  .vitals__value {
+    font-size: 1.05rem;
+    font-variant-numeric: tabular-nums;
+  }
+  @media (max-width: 700px) {
+    .vitals { grid-template-columns: repeat(2, 1fr); }
+    .vitals__item:nth-child(3) { border-left: none; }
+  }
+
+  /* ---------------- Generic section ---------------- */
+  section.band { padding: var(--section-pad) 0; }
+  .band--panel { background: var(--bg-panel); }
+  .band__inner { max-width: 1180px; margin: 0 auto; padding: 0 var(--gutter); }
+  .band__head { max-width: 62ch; margin-bottom: 44px; }
+  .band__head h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); margin-bottom: 16px; }
+  .band__head p { color: var(--ink-soft); font-size: 1.04rem; max-width: 58ch; }
+
+  /* ---------------- Principle ---------------- */
+  .principle {
+    padding: clamp(72px, 10vw, 120px) var(--gutter);
+    text-align: center;
+  }
+  .principle blockquote {
+    font-size: clamp(1.6rem, 3.6vw, 2.5rem);
+    line-height: 1.3;
+    max-width: 20ch;
+    margin: 0 auto;
+    font-style: italic;
+  }
+
+  /* ---------------- Process ---------------- */
+  .process__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    max-width: 640px;
+  }
+  .process__list::before {
+    content: "";
+    position: absolute;
+    left: 23px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: var(--line);
+  }
+  .process__item {
+    display: flex;
+    gap: 24px;
+    position: relative;
+    padding-bottom: 48px;
+  }
+  .process__item:last-child { padding-bottom: 0; }
+  .process__num {
+    flex: 0 0 auto;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--trust);
+    color: var(--trust);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    position: relative;
+    z-index: 1;
+  }
+  .process__body h3 { font-size: 1.2rem; margin-bottom: 8px; font-family: var(--font-body); font-weight: 600; }
+  .process__body p { color: var(--ink-soft); max-width: 50ch; }
+
+  /* ---------------- Trust demo ---------------- */
+  .trust-demo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 64px;
+    align-items: center;
+  }
+  @media (max-width: 860px) {
+    .trust-demo { grid-template-columns: 1fr; }
+  }
+  .trust-demo__text p { color: var(--ink-soft); margin: 18px 0 26px; max-width: 46ch; }
+  .trust-demo__replay {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 600;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    border-radius: 6px;
+    padding: 12px 20px;
+    cursor: pointer;
+  }
+  .trust-demo__replay:hover { background: var(--trust); }
+
+  .trust-demo__device {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 1px 2px rgba(20, 40, 34, 0.05);
+  }
+  .rank-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--bg);
+  }
+  .rank-row--top { border-color: var(--trust); background: var(--trust-soft); }
+  .rank-row--flagged { border-color: var(--pulse); }
+  .rank-row__left { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
+  .rank-row__rank {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    width: 30px;
+    flex: 0 0 auto;
+  }
+  .rank-row__name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rank-row__flag {
+    font-size: 0.72rem;
+    color: var(--pulse);
+    display: none;
+    white-space: nowrap;
+  }
+  .rank-row--flagged .rank-row__flag { display: inline; }
+  .rank-row__meta {
+    display: flex;
+    gap: 16px;
+    font-size: 0.84rem;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    flex: 0 0 auto;
+  }
+  .rank-row--flagged .rank-row__value--icu { color: var(--pulse); font-weight: 700; }
+
+  /* ---------------- Stack ---------------- */
+  .stack__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .stack__item {
+    background: var(--bg);
+    padding: 26px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .stack__item h3 { font-family: var(--font-body); font-weight: 600; font-size: 1.02rem; }
+  .stack__item p { color: var(--ink-soft); font-size: 0.92rem; }
+
+  /* ---------------- Compare table ---------------- */
+  table.compare__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.96rem;
+  }
+  .compare__table th, .compare__table td {
+    text-align: left;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .compare__table th {
+    font-weight: 600;
+    color: var(--ink-faint);
+    font-size: 0.8rem;
+    border-bottom: 1px solid var(--ink);
+  }
+  .compare__table td:first-child { font-weight: 600; white-space: nowrap; }
+  .compare__table td:nth-child(2) { color: var(--ink-soft); }
+
+  /* ---------------- Roadmap ---------------- */
+  .roadmap__track {
+    position: relative;
+    display: flex;
+    gap: 0;
+    padding-top: 20px;
+  }
+  .roadmap__line {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--line);
+  }
+  .roadmap__line-fill {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background: var(--pulse);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  .roadmap__phase {
+    flex: 1;
+    padding-right: 28px;
+    min-width: 0;
+  }
+  .roadmap__dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--trust);
+    margin-bottom: 18px;
+  }
+  .roadmap__phase h3 { font-family: var(--font-body); font-weight: 600; font-size: 1.02rem; margin-bottom: 6px; }
+  .roadmap__phase .roadmap__when { font-size: 0.8rem; color: var(--ink-faint); display: block; margin-bottom: 10px; }
+  .roadmap__phase p { color: var(--ink-soft); font-size: 0.92rem; }
+
+  @media (max-width: 860px) {
+    .roadmap__track { flex-direction: column; gap: 36px; padding-top: 0; padding-left: 26px; }
+    .roadmap__line { top: 0; bottom: 0; left: 7px; right: auto; width: 2px; height: auto; }
+    .roadmap__line-fill { top: 0; left: 7px; height: 100%; width: 2px; transform: scaleY(0); transform-origin: top center; }
+    .roadmap__phase { padding-right: 0; position: relative; }
+    .roadmap__dot { position: absolute; left: -26px; top: 2px; margin-bottom: 0; }
+  }
+
+  /* ---------------- Footer ---------------- */
+  .footer {
+    padding: 48px var(--gutter) 64px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+  }
+  .footer strong { color: var(--ink); font-weight: 600; }
+
+  [data-reveal] { opacity: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-cue__arrow, .hero__canvas-tag .dot { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <span class="nav__mark">MedGrid</span>
+  <nav class="nav__links">
+    <a href="#problem">Problem</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#roadmap">Roadmap</a>
+  </nav>
+  <span class="nav__tag">SIH26133</span>
+</header>
+
+<section class="hero" id="hero">
+  <div class="hero__content">
+    <h1 class="hero__title">The nearest hospital isn't always the right one.</h1>
+    <p class="hero__sub">MedGrid matches a patient's real need — a free ICU bed, a working ventilator, the right blood type — to live hospital capacity across Maharashtra, and keeps routing as conditions change.</p>
+    <a class="scroll-cue" href="#problem" aria-label="Scroll to see how MedGrid works">
+      <span class="scroll-cue__arrow" aria-hidden="true"></span>
+      See how it works
+    </a>
+  </div>
+  <div class="hero__canvas-wrap">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero__canvas-tag"><span class="dot" aria-hidden="true"></span> Live coordination, simulated</div>
+  </div>
+</section>
+
+<section class="vitals" aria-label="Project facts">
+  <div class="vitals__item">
+    <span class="vitals__label">Problem statement</span>
+    <span class="vitals__value">SIH26133</span>
+  </div>
+  <div class="vitals__item">
+    <span class="vitals__label">Theme</span>
+    <span class="vitals__value">HealthTech</span>
+  </div>
+  <div class="vitals__item">
+    <span class="vitals__label">Sponsor</span>
+    <span class="vitals__value">Govt. of Maharashtra</span>
+  </div>
+  <div class="vitals__item">
+    <span class="vitals__label">Format</span>
+    <span class="vitals__value">36-hour build</span>
+  </div>
+</section>
+
+<section class="band" id="problem">
+  <div class="band__inner">
+    <div class="band__head" data-reveal>
+      <h2>Built for what SIH26133 actually asks</h2>
+    </div>
+    <p style="max-width: 68ch; color: var(--ink-soft); font-size: 1.05rem;">
+      The brief is specific: accessibility and quality of public healthcare, particularly in rural and underserved areas — not a general hospital app, access for the people the current system underserves.
+      In rural Maharashtra, the closest hospital is often not the one with a free bed, a working ventilator, or the right blood type. And the real-time bed dashboards built in a hurry during COVID mostly went quiet within a year, because nothing rewarded a facility for keeping its numbers honest. MedGrid is built to fix both problems at once — capability over proximity, and trust over hope.
+    </p>
+  </div>
+</section>
+
+<section class="principle band--panel">
+  <blockquote data-reveal>Rural and underserved access is the actual ask —<br>not a stretch goal.</blockquote>
+</section>
+
+<section class="band" id="how-it-works">
+  <div class="band__inner">
+    <div class="band__head" data-reveal>
+      <h2>How it works</h2>
+      <p>One request, four things happening underneath it.</p>
+    </div>
+    <ol class="process__list">
+      <li class="process__item">
+        <span class="process__num">1</span>
+        <div class="process__body">
+          <h3>Describe the need</h3>
+          <p>Speak or type it — in Marathi, Hindi, or English. "ICU near Pune" becomes a structured request in under a second.</p>
+        </div>
+      </li>
+      <li class="process__item">
+        <span class="process__num">2</span>
+        <div class="process__body">
+          <h3>Match capability, not distance</h3>
+          <p>Facilities are ranked by whether they actually have the bed, equipment, or blood type needed — then by how fast a patient can really get there.</p>
+        </div>
+      </li>
+      <li class="process__item">
+        <span class="process__num">3</span>
+        <div class="process__body">
+          <h3>Rank by real-time trust</h3>
+          <p>Every ranking weighs how recently, and how reliably, a facility has been updating its own numbers.</p>
+        </div>
+      </li>
+      <li class="process__item">
+        <span class="process__num">4</span>
+        <div class="process__body">
+          <h3>Reroute as it happens</h3>
+          <p>If the top match fills up mid-transit, the next best option is already known.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="band band--panel" id="trust">
+  <div class="band__inner">
+    <div class="trust-demo">
+      <div class="trust-demo__text" data-reveal>
+        <h2>Data you can actually trust</h2>
+        <p>A ranking is only as good as the numbers behind it. MedGrid watches every update a facility makes — a jump that doesn't make sense, like a facility with two ICU beds suddenly reporting five hundred free, gets flagged and de-ranked automatically, before a patient is ever routed toward it.</p>
+        <button class="trust-demo__replay" type="button">Replay the update</button>
+      </div>
+      <div class="trust-demo__device">
+        <div class="rank-row rank-row--top" data-id="a">
+          <div class="rank-row__left">
+            <span class="rank-row__rank">#1</span>
+            <div>
+              <div class="rank-row__name">Sub-District Hospital, Wai</div>
+              <div class="rank-row__flag">Anomaly flagged</div>
+            </div>
+          </div>
+          <div class="rank-row__meta">
+            <span>ICU <span class="rank-row__value rank-row__value--icu">2</span></span>
+            <span>Trust <span class="rank-row__trust">97</span></span>
+          </div>
+        </div>
+        <div class="rank-row" data-id="b">
+          <div class="rank-row__left">
+            <span class="rank-row__rank">#2</span>
+            <div>
+              <div class="rank-row__name">Rural Hospital, Panchgani</div>
+              <div class="rank-row__flag">Anomaly flagged</div>
+            </div>
+          </div>
+          <div class="rank-row__meta">
+            <span>ICU <span class="rank-row__value rank-row__value--icu">1</span></span>
+            <span>Trust <span class="rank-row__trust">88</span></span>
+          </div>
+        </div>
+        <div class="rank-row" data-id="c">
+          <div class="rank-row__left">
+            <span class="rank-row__rank">#3</span>
+            <div>
+              <div class="rank-row__name">District Hospital, Satara</div>
+              <div class="rank-row__flag">Anomaly flagged</div>
+            </div>
+          </div>
+          <div class="rank-row__meta">
+            <span>ICU <span class="rank-row__value rank-row__value--icu">3</span></span>
+            <span>Trust <span class="rank-row__trust">74</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="stack">
+  <div class="band__inner">
+    <div class="band__head" data-reveal>
+      <h2>Built on infrastructure fast enough to matter</h2>
+      <p>Every piece was chosen for one thing: speed a rural connection can still feel.</p>
+    </div>
+    <div class="stack__grid">
+      <div class="stack__item">
+        <h3>Groq</h3>
+        <p>Near-instant language parsing, on dedicated inference hardware.</p>
+      </div>
+      <div class="stack__item">
+        <h3>Sarvam AI</h3>
+        <p>Voice and speech built for Indian languages, hosted in India.</p>
+      </div>
+      <div class="stack__item">
+        <h3>Supabase</h3>
+        <p>Live facility data over WebSockets — no polling, no lag.</p>
+      </div>
+      <div class="stack__item">
+        <h3>Mapbox</h3>
+        <p>Real drive-time to a facility, not straight-line distance.</p>
+      </div>
+      <div class="stack__item">
+        <h3>Health Facility Registry</h3>
+        <p>Facility identity aligned to India's own hospital registry.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band band--panel">
+  <div class="band__inner">
+    <div class="band__head" data-reveal>
+      <h2>Why not just use what already exists?</h2>
+    </div>
+    <table class="compare__table">
+      <thead>
+        <tr>
+          <th>Already exists</th>
+          <th>What it does</th>
+          <th>What MedGrid adds</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>108 / 102 Ambulance Dispatch</td>
+          <td>Sends the nearest available ambulance</td>
+          <td>Routes to the hospital that can treat the patient, and pre-reserves the bed</td>
+        </tr>
+        <tr>
+          <td>ABDM / Health Facility Registry</td>
+          <td>A verified directory of facilities</td>
+          <td>Uses the same facility IDs, adds the live coordination layer on top</td>
+        </tr>
+        <tr>
+          <td>Hospital HMIS</td>
+          <td>Tracks one hospital's own beds and staff</td>
+          <td>Coordinates across every hospital in the district at once</td>
+        </tr>
+        <tr>
+          <td>Standalone locator apps</td>
+          <td>Lists addresses and specialities</td>
+          <td>Live capability, live trust, live rerouting</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="band" id="roadmap">
+  <div class="band__inner">
+    <div class="band__head" data-reveal>
+      <h2>From hackathon to state rollout</h2>
+    </div>
+    <div class="roadmap__track">
+      <div class="roadmap__line"></div>
+      <div class="roadmap__line-fill"></div>
+      <div class="roadmap__phase">
+        <span class="roadmap__dot"></span>
+        <span class="roadmap__when">December 2026</span>
+        <h3>Hackathon MVP</h3>
+        <p>Live capability matching, trust-aware ranking, and one voice query — end to end.</p>
+      </div>
+      <div class="roadmap__phase">
+        <span class="roadmap__dot"></span>
+        <span class="roadmap__when">4–8 weeks after</span>
+        <h3>District pilot</h3>
+        <p>Real facilities onboarded in one district, ambulance app, bed pre-reservation.</p>
+      </div>
+      <div class="roadmap__phase">
+        <span class="roadmap__dot"></span>
+        <span class="roadmap__when">3–6 months</span>
+        <h3>Statewide rollout</h3>
+        <p>Full multilingual voice, scheme eligibility, offline-degraded mode.</p>
+      </div>
+      <div class="roadmap__phase">
+        <span class="roadmap__dot"></span>
+        <span class="roadmap__when">6–12 months</span>
+        <h3>Sustained operation</h3>
+        <p>District and state dashboards, automated data-quality enforcement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p><strong>MedGrid</strong> — a student team project for Smart India Hackathon 2026.<br>Problem Statement SIH26133, HealthTech, Government of Maharashtra.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script type="module">
+  import * as THREE from 'https://unpkg.com/three@0.160.1/build/three.module.js';
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------- Hero 3D network scene ---------------- */
+  function initHeroScene() {
+    const wrap = document.querySelector('.hero__canvas-wrap');
+    const canvas = document.querySelector('#hero-canvas');
+    if (!wrap || !canvas || !window.WebGLRenderingContext) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(38, wrap.clientWidth / Math.max(wrap.clientHeight, 1), 0.1, 100);
+    camera.position.set(0.4, 1.0, 7.4);
+    camera.lookAt(0, 0.15, 0);
+
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    } catch (e) {
+      return;
+    }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+    const key = new THREE.DirectionalLight(0xffffff, 0.9);
+    key.position.set(3, 5, 4);
+    scene.add(key);
+    const fill = new THREE.DirectionalLight(0x1f6f63, 0.4);
+    fill.position.set(-4, -2, -3);
+    scene.add(fill);
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    const grid = new THREE.GridHelper(9, 18, 0xd6453d, 0xd9d6c9);
+    grid.position.y = -1.7;
+    grid.material.opacity = 0.1;
+    grid.material.transparent = true;
+    group.add(grid);
+
+    const patientMat = new THREE.MeshStandardMaterial({
+      color: 0xd6453d, roughness: 0.35, metalness: 0.05,
+      emissive: 0x7a1f1a, emissiveIntensity: 0.18,
+    });
+    const patient = new THREE.Mesh(new THREE.SphereGeometry(0.32, 32, 32), patientMat);
+    patient.position.set(0, 0.15, 0);
+    group.add(patient);
+
+    const hospitalDefs = [
+      { pos: [2.5, 0.85, -0.5], best: true },
+      { pos: [-2.1, 1.25, 0.4], best: false },
+      { pos: [1.5, -0.6, 1.6], best: false },
+      { pos: [-1.6, -0.9, -1.3], best: false },
+      { pos: [0.4, 1.75, -2.0], best: false },
+      { pos: [-0.5, -1.45, 1.85], best: false },
+    ];
+
+    const hospMat = new THREE.MeshStandardMaterial({ color: 0x1f6f63, roughness: 0.4, metalness: 0.05 });
+    const hospMatDim = new THREE.MeshStandardMaterial({ color: 0xc3d8d0, roughness: 0.6, metalness: 0 });
+    const lineMat = new THREE.LineBasicMaterial({ color: 0xd9d6c9, transparent: true, opacity: 0.55 });
+    const bestLineMat = new THREE.LineBasicMaterial({ color: 0xd6453d, transparent: true, opacity: 0.85 });
+
+    const travelers = [];
+
+    hospitalDefs.forEach((def) => {
+      const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(def.best ? 0.19 : 0.14, 24, 24),
+        def.best ? hospMat : hospMatDim
+      );
+      mesh.position.set(def.pos[0], def.pos[1], def.pos[2]);
+      group.add(mesh);
+
+      const lineGeo = new THREE.BufferGeometry().setFromPoints([patient.position.clone(), mesh.position.clone()]);
+      const line = new THREE.Line(lineGeo, def.best ? bestLineMat : lineMat);
+      group.add(line);
+
+      if (def.best) {
+        const traveler = new THREE.Mesh(
+          new THREE.SphereGeometry(0.06, 16, 16),
+          new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xd6453d, emissiveIntensity: 0.7 })
+        );
+        group.add(traveler);
+        travelers.push({ mesh: traveler, from: patient.position, to: mesh.position, t: 0 });
+      }
+    });
+
+    function onResize() {
+      const w = wrap.clientWidth, h = wrap.clientHeight || 1;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', onResize);
+
+    let visible = true;
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { visible = e.isIntersecting; });
+      });
+      io.observe(wrap);
+    }
+
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (!visible) return;
+      const t = clock.getElapsedTime();
+
+      if (!reduceMotion) {
+        group.rotation.y = t * 0.08;
+        patient.scale.setScalar(1 + Math.sin(t * 2.4) * 0.06);
+        travelers.forEach((tr) => {
+          tr.t = (tr.t + 0.006) % 1;
+          tr.mesh.position.lerpVectors(tr.from, tr.to, tr.t);
+        });
+      }
+
+      renderer.render(scene, camera);
+    }
+    animate();
+  }
+
+  try {
+    initHeroScene();
+  } catch (e) {
+    /* Hero canvas is decorative; page works fully without it. */
+  }
+</script>
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------- Scroll-triggered motion ---------------- */
+  function initScrollFx() {
+    if (typeof gsap === 'undefined') {
+      document.querySelectorAll('[data-reveal]').forEach((el) => { el.style.opacity = '1'; });
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.querySelectorAll('[data-reveal]').forEach((el) => {
+      gsap.fromTo(
+        el,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: reduceMotion ? 0.01 : 0.9,
+          ease: 'power1.out',
+          scrollTrigger: { trigger: el, start: 'top 85%' },
+        }
+      );
+    });
+
+    gsap.matchMedia().add(
+      { isDesktop: '(min-width: 861px)', isMobile: '(max-width: 860px)' },
+      (context) => {
+        const isDesktop = context.conditions.isDesktop;
+        gsap.set('.roadmap__line-fill', {
+          scaleX: isDesktop ? 0 : 1,
+          scaleY: isDesktop ? 1 : 0,
+          transformOrigin: isDesktop ? 'left center' : 'top center',
+        });
+        gsap.to('.roadmap__line-fill', isDesktop
+          ? { scaleX: 1, ease: 'none', scrollTrigger: { trigger: '.roadmap__track', start: 'top 75%', end: 'bottom 65%', scrub: 0.6 } }
+          : { scaleY: 1, ease: 'none', scrollTrigger: { trigger: '.roadmap__track', start: 'top 80%', end: 'bottom 75%', scrub: 0.6 } });
+
+        gsap.utils.toArray('.roadmap__dot').forEach((dot) => {
+          gsap.fromTo(
+            dot,
+            { scale: 0.4, opacity: 0.35 },
+            { scale: 1, opacity: 1, scrollTrigger: { trigger: dot, start: 'top 85%' } }
+          );
+        });
+      }
+    );
+  }
+
+  /* ---------------- Trust / anomaly demo (click + scroll triggered) ---------------- */
+  function initTrustDemo() {
+    const device = document.querySelector('.trust-demo__device');
+    if (!device) return;
+
+    const rowEls = {
+      a: device.querySelector('[data-id="a"]'),
+      b: device.querySelector('[data-id="b"]'),
+      c: device.querySelector('[data-id="c"]'),
+    };
+
+    const initialState = {
+      a: { icu: '2', trust: '97', rank: 1, flagged: false },
+      b: { icu: '1', trust: '88', rank: 2, flagged: false },
+      c: { icu: '3', trust: '74', rank: 3, flagged: false },
+    };
+    const anomalyState = {
+      a: { icu: '500', trust: '41', rank: 3, flagged: true },
+      b: { icu: '1', trust: '88', rank: 1, flagged: false },
+      c: { icu: '3', trust: '74', rank: 2, flagged: false },
+    };
+
+    function render(state, animate) {
+      const els = [rowEls.a, rowEls.b, rowEls.c];
+      const before = animate ? els.map((el) => el.getBoundingClientRect().top) : null;
+
+      Object.keys(state).forEach((id) => {
+        const s = state[id];
+        const el = rowEls[id];
+        el.style.order = s.rank;
+        el.querySelector('.rank-row__rank').textContent = '#' + s.rank;
+        el.querySelector('.rank-row__value--icu').textContent = s.icu;
+        el.querySelector('.rank-row__trust').textContent = s.trust;
+        el.classList.toggle('rank-row--flagged', s.flagged);
+        el.classList.toggle('rank-row--top', s.rank === 1);
+      });
+
+      if (animate && typeof gsap !== 'undefined') {
+        requestAnimationFrame(() => {
+          const after = els.map((el) => el.getBoundingClientRect().top);
+          els.forEach((el, i) => {
+            const delta = before[i] - after[i];
+            if (delta) {
+              gsap.fromTo(el, { y: delta }, { y: 0, duration: reduceMotion ? 0.01 : 0.6, ease: 'power2.out' });
+            }
+          });
+        });
+      }
+    }
+
+    render(initialState, false);
+    let showingAnomaly = false;
+
+    function play() {
+      render(showingAnomaly ? initialState : anomalyState, true);
+      showingAnomaly = !showingAnomaly;
+    }
+
+    let autoPlayed = false;
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !autoPlayed) {
+            autoPlayed = true;
+            setTimeout(play, 650);
+          }
+        });
+      }, { threshold: 0.55 });
+      io.observe(device);
+    }
+
+    const replayBtn = document.querySelector('.trust-demo__replay');
+    if (replayBtn) replayBtn.addEventListener('click', play);
+  }
+
+  initScrollFx();
+  initTrustDemo();
+</script>
+<!-- VoiceAI Assistant Widget -->
+<script src="http://localhost:5173/assistant.js" data-user-id="YOUR_USER_ID_HERE" data-server-url="http://localhost:8000"></script>
+</body>
+</html>

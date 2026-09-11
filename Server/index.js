@@ -42,7 +42,7 @@ app.use("/api/user",privateCors , userRouter)
 app.use("/api/billing",privateCors , billingRouter)
 
 app.use("/api/assistant",publicCors , assistantRouter)
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 8000
 app.listen(PORT , ()=>{
     console.log(`Server Started on Port ${PORT}`)
     connectDB()

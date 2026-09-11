@@ -6,7 +6,7 @@ import logo from "../assets/logo.png"
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../utils/firebase';
 import axios from "axios"
-import { ServerUrl } from '../App';
+import { ServerUrl } from '../config';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 function Login({setUser}) {

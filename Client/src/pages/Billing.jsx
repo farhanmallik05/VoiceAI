@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { ServerUrl } from '../App';
+import { ServerUrl } from '../config';
 
 function Billing({ user ,setUser}) {
   const navigate = useNavigate()

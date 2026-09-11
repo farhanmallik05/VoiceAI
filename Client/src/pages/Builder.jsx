@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState } from 'react'
 import { FiCopy, FiPlus, FiTrash2 } from 'react-icons/fi';
-import { CLIENT_URL, ServerUrl } from '../App';
+import { CLIENT_URL, ServerUrl } from '../config';
 import toast from 'react-hot-toast';
 
 const THEMES = [
@@ -207,7 +207,7 @@ function Builder({user , setUser}) {
 
   Your Website Content
 
-  <script src="\${CLIENT_URL}/assistant.js" data-user-id="\${user?._id || ""}" data-server-url="\${ServerUrl}"></script>
+  <script src="${CLIENT_URL}/assistant.js" data-user-id="${user?._id || ""}" data-server-url="${ServerUrl}"></script>
 
 </body>\`}
                   </pre>

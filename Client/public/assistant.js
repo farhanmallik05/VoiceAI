@@ -10,15 +10,15 @@
     const userId = script?.dataset?.userId || script?.getAttribute('data-user-id');
 
     // Base URL for static assets (CSS, icons) derived from the script source
-    let assetBaseUrl = "http://localhost:5173";
+    let assetBaseUrl;
     try {
         if (script && script.src) {
-            const parsedUrl = new URL(script.src, window.location.href);
-            assetBaseUrl = parsedUrl.origin;
+            assetBaseUrl = new URL(script.src, window.location.href).origin;
         } else {
             assetBaseUrl = window.location.origin;
         }
-    } catch (e) {
+    } catch (error) {
+        console.warn("[VoiceAI] Asset resolution fallback:", error);
         assetBaseUrl = window.location.origin;
     }
 

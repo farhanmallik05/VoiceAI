@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import logo from "../assets/logo.png"
 import { FiLogOut, FiMenu, FiX } from "react-icons/fi";
 import axios from 'axios';
-import { ServerUrl } from '../App';
+import { ServerUrl } from '../config';
 import toast from 'react-hot-toast';
 function Navbar({user , setUser}) {
   const navigate = useNavigate()
