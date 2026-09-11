@@ -1,5 +1,5 @@
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash"
-const Gemini_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`
+const getModel = () => process.env.GEMINI_MODEL || "gemini-3.6-flash"
+const getGeminiUrl = () => `https://generativelanguage.googleapis.com/v1beta/models/${getModel()}:generateContent`
 
 
 export const generateGeminiResponse = async ({
@@ -13,7 +13,7 @@ export const generateGeminiResponse = async ({
             throw new Error("Gemini API key missing")
         }
 
-        const response = await fetch(`${Gemini_URL}?key=${apikey}`, {
+        const response = await fetch(`${getGeminiUrl()}?key=${apikey}`, {
             method: "POST",
             headers: {
                 "Content-Type":
