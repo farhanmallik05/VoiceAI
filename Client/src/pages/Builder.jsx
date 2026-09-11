@@ -203,13 +203,7 @@ function Builder({user , setUser}) {
                   </p>
 
                   <pre className='mt-3 bg-[#0b1020] text-emerald-400 rounded-xl p-3 text-xs font-mono overflow-x-auto'>
-                     {\`<body>
-
-  Your Website Content
-
-  <script src="${CLIENT_URL}/assistant.js" data-user-id="${user?._id || ""}" data-server-url="${ServerUrl}"></script>
-
-</body>\`}
+                     {"<body>\n\n  Your Website Content\n\n  " + embedCode + "\n\n</body>"}
                   </pre>
                 </div>
 
