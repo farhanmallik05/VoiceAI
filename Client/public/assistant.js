@@ -136,10 +136,15 @@
 
     let open = false
 
-    button.onclick = () => {
+    const togglePopup = () => {
         open = !open;
         popup.style.display = open ? "flex" : "none";
     }
+
+    button.onclick = togglePopup;
+
+    // Expose toggle globally for custom buttons
+    window.toggleVoiceAI = togglePopup;
 
 
     // load Assistant
